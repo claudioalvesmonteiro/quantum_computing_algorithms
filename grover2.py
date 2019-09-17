@@ -19,7 +19,7 @@ nqubits = 3
 # creating a quantum register with 3 qubits
 q = qk.QuantumRegister(nqubits)
 
-# creating a classical register with  nqubits -1 (for measure)
+# creating a classical register with  nqubits(for measure)
 c = qk.ClassicalRegister(nqubits)
 
 # build quantum circuit with the qubits and classical register
@@ -32,60 +32,58 @@ print(circuit)
 # Quantum State 1
 #==============================#
 
-# Hadamard on all qubits
-for i in range(nqubits):
-    circuit.h(q[i])
-
-# NOT on all qubits
-for i in range(nqubits):
-    circuit.x(q[i])
-
-# hadamard on the last
-circuit.h(q[2])
-
-# controlled Not toffoli for gates
-circuit.ccx(q[0], q[1], q[2])
-
-# hadamard on the last
-circuit.h(q[2])
-
-# NOT on all qubits
-for i in range(nqubits):
-    circuit.x(q[i])
+# not on last qubit
+circuit.x(q[2])
 
 # Hadamard on all qubits
 for i in range(nqubits):
     circuit.h(q[i])
+
 
 #===============================#
 # ORACLE
 #==============================#
 
-# controlled Z 
-circuit.cz(q[1], q[2])
-
-
-#===============================#
-# PHASE
-#==============================#
-
-
-# Hadamard on all qubits
-for i in range(nqubits):
-    circuit.h(q[i])
-
-# controlled NOT toffoli
+# multi controlled not 
 circuit.ccx(q[0], q[1], q[2])
 
+#===============================#
+# CONDITIONAL PHASE SHIFT
+#==============================#
 
-print(circuit)
+# Hadamard on all but last
+for i in range(nqubits-1):
+    circuit.h(q[i])
+
+# not in all but last
+for i in range(nqubits-1):
+    circuit.x(q[i])
+
+# hadamrd before last
+circuit.h(q[1])
+
+# cnot
+circuit.cx(q[0], q[1])
+
+# hadamrd before last
+circuit.h(q[1])
+
+# not in all but last
+for i in range(nqubits-1):
+    circuit.x(q[i])
+
+# Hadamard on all but last
+for i in range(nqubits-1):
+    circuit.h(q[i])
 
 #========================#
 # SIMULATE ALGORITHM
 #======================#
 
 # measure
-circuit.measure(q, c)
+circuit.measure(q[0:2], c[0:2])
+
+print(circuit)
 
 # using Aer Qasm Simulator
 simulator = qk.BasicAer.get_backend('qasm_simulator')

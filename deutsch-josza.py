@@ -6,7 +6,6 @@ Introduction to Qiskit
 clam@cin.ufpe.br
 '''
 
-
 #=======================#
 # INITIALIZATION
 #======================#
@@ -14,40 +13,50 @@ clam@cin.ufpe.br
 # import package
 import qiskit as qk
 
-# creating a quantum register with 2 qubits
-q = qk.QuantumRegister(2)
+# define nqubits
+nqubits = 3
 
-# creating a classical register with 2 bits (for measure)
-c = qk.ClassicalRegister(2)
+# creating a quantum register with 3 qubits
+q = qk.QuantumRegister(nqubits)
+
+# creating a classical register with  nqubits(for measure)
+c = qk.ClassicalRegister(nqubits-1)
 
 # build quantum circuit with the qubits and classical register
 circuit = qk.QuantumCircuit(q, c)
 
-# print circuit
-print(circuit)
-
 #===============================#
-# APPLY QUANTUM GATES ON QUBITS
+# Quantum State 1
 #==============================#
 
-# Hadamard gate on 1st qubit
-circuit.h(q[0])
+# not on last qubit
+circuit.x(q[2])
 
-# NOT gate on second qubit 
-circuit.x(q[1])
+# Hadamard on all qubits
+for i in range(nqubits):
+    circuit.h(q[i])
 
-# CNOT gate , controlled by first, applied to second
-circuit.cx(q[0], q[1])
+#===============================#
+# ORACLE
+#==============================#
 
-# measure qubits
-circuit.measure(q, c)
+# NOT on last
+circuit.x(q[2])
 
-# print circuit
-print(circuit)
+#===============================#
+# PSI 2
+#==============================#
+
+# Hadamard on all qubits but last
+for i in range(nqubits-1):
+    circuit.h(q[i])
 
 #========================#
 # SIMULATE ALGORITHM
 #======================#
+
+# measure
+circuit.measure(q[0:1], c[0:1])
 
 # using Aer Qasm Simulator
 simulator = qk.BasicAer.get_backend('qasm_simulator')
